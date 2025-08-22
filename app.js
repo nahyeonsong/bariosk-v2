@@ -38,6 +38,65 @@
         }
     };
 
+    // --- Supabase Remote Helpers (optional) ---
+    const isRemote = () => !!window.sb;
+    const toDbCategory = (c) => ({ id: c.id, name: c.name, order: c.order });
+    const fromDbCategory = (c) => ({ id: c.id, name: c.name, order: c.order });
+    const toDbMenu = (m) => ({
+        id: m.id,
+        category_id: m.categoryId,
+        name: m.name,
+        price: m.price,
+        order: m.order,
+    });
+    const fromDbMenu = (m) => ({
+        id: m.id,
+        categoryId: m.category_id,
+        name: m.name,
+        price: m.price,
+        order: m.order,
+    });
+    const remote = {
+        async fetchAll() {
+            const [cats, menus] = await Promise.all([
+                window.sb
+                    .from("categories")
+                    .select("*")
+                    .order("order", { ascending: true }),
+                window.sb
+                    .from("menus")
+                    .select("*")
+                    .order("order", { ascending: true }),
+            ]);
+            if (cats.error) throw cats.error;
+            if (menus.error) throw menus.error;
+            state.categories = (cats.data || []).map(fromDbCategory);
+            state.menus = (menus.data || []).map(fromDbMenu);
+            if (state.selectedCategoryId == null && state.categories[0]) {
+                state.selectedCategoryId = state.categories[0].id;
+            }
+        },
+        subscribeRealtime() {
+            const ch = window.sb.channel("bariosk-sync");
+            ["categories", "menus"].forEach((tbl) => {
+                ch.on(
+                    "postgres_changes",
+                    { event: "*", schema: "public", table: tbl },
+                    async () => {
+                        try {
+                            await remote.fetchAll();
+                            renderCategories();
+                            renderMenu();
+                        } catch (e) {
+                            /* ignore */
+                        }
+                    }
+                );
+            });
+            ch.subscribe();
+        },
+    };
+
     /** Seed default data if empty */
     const seedIfEmpty = () => {
         if (state.categories.length === 0) {
@@ -517,9 +576,20 @@
     };
 
     /** Init */
-    const init = () => {
-        load();
-        seedIfEmpty();
+    const init = async () => {
+        if (isRemote()) {
+            try {
+                await remote.fetchAll();
+                remote.subscribeRealtime();
+            } catch (e) {
+                // 원격 로드 실패 시 로컬로 폴백
+                load();
+                seedIfEmpty();
+            }
+        } else {
+            load();
+            seedIfEmpty();
+        }
         bindEvents();
         renderCategories();
         renderMenu();

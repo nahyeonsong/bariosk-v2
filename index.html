@@ -100,6 +100,14 @@
             <div class="receipt-inner" id="receiptContent"></div>
         </div>
 
+        <!-- Supabase CDN 및 초기화 (원격 동기화용) -->
+        <!-- 아래 두 값을 배포 시 설정하세요 (또는 개발 시 임시로 채워넣기) -->
+        <script>
+            window.SUPABASE_URL = ""; // 예: https://xxxx.supabase.co
+            window.SUPABASE_ANON_KEY = ""; // 예: eyJhbGciOiJIUzI1...
+        </script>
+        <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+        <script src="lib/supabase.js"></script>
         <script src="app.js"></script>
         <script>
             // 폰트 로딩 실패 대비: Pretendard 미지원 환경에서도 시스템 폰트 사용
