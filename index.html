@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ko">
+    <head>
+        <meta charset="UTF-8" />
+        <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1.0, user-scalable=no"
+        />
+        <title>Bariosk Kiosk</title>
+        <link rel="stylesheet" href="styles.css" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;700&display=swap"
+            rel="stylesheet"
+        />
+    </head>
+    <body>
+        <div id="app">
+            <header class="app-header">
+                <div class="brand" id="brandLogo" title="길게 눌러 관리자 모드">
+                    <span class="logo">Bariosk</span>
+                    <span class="hint">길게 눌러 관리자</span>
+                </div>
+                <div class="header-actions">
+                    <button id="printBtn" class="primary">주문서 출력</button>
+                </div>
+            </header>
+
+            <main class="main">
+                <section class="left">
+                    <div id="categoryTabs" class="categories"></div>
+                    <div id="menuGrid" class="menu-grid"></div>
+                </section>
+                <aside class="right cart">
+                    <div class="cart-header">
+                        <h2>장바구니</h2>
+                        <button id="clearCartBtn" class="danger ghost">
+                            모두 비우기
+                        </button>
+                    </div>
+                    <div id="cartList" class="cart-list"></div>
+                    <div class="cart-footer">
+                        <div class="total-row">
+                            <span>합계</span>
+                            <strong id="cartTotal">0원</strong>
+                        </div>
+                    </div>
+                </aside>
+            </main>
+
+            <section id="adminPanel" class="admin hidden">
+                <div class="admin-header">
+                    <h2>관리자 모드</h2>
+                    <button id="closeAdminBtn" class="ghost">닫기</button>
+                </div>
+                <div class="admin-body">
+                    <div class="admin-section">
+                        <h3>카테고리 관리</h3>
+                        <form id="categoryForm" class="row">
+                            <input
+                                id="categoryNameInput"
+                                type="text"
+                                placeholder="카테고리 이름"
+                                required
+                            />
+                            <button class="primary" type="submit">추가</button>
+                        </form>
+                        <div id="categoryAdminList" class="admin-list"></div>
+                    </div>
+                    <div class="admin-section">
+                        <h3>메뉴 관리</h3>
+                        <div class="row">
+                            <select id="menuCategorySelect"></select>
+                        </div>
+                        <form id="menuForm" class="row">
+                            <input
+                                id="menuNameInput"
+                                type="text"
+                                placeholder="메뉴 이름"
+                                required
+                            />
+                            <input
+                                id="menuPriceInput"
+                                type="number"
+                                min="0"
+                                step="100"
+                                placeholder="가격"
+                                required
+                            />
+                            <button class="primary" type="submit">추가</button>
+                        </form>
+                        <div id="menuAdminList" class="admin-list"></div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <div id="receipt" class="receipt">
+            <div class="receipt-inner" id="receiptContent"></div>
+        </div>
+
+        <script src="app.js"></script>
+        <script>
+            // 폰트 로딩 실패 대비: Pretendard 미지원 환경에서도 시스템 폰트 사용
+            document.addEventListener("DOMContentLoaded", function () {
+                document.body.classList.add("ready");
+            });
+        </script>
+    </body>
+</html>
